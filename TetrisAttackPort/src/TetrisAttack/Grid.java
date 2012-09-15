@@ -24,13 +24,16 @@ public class Grid {
 	private layoutGenerator rowGenerator;
 	private TAGraphic gridPanel;
 	private TAGraphic enemyPanel;
+	private Game.Cursor associatedCursor;
 	private Vector<Block> newRow;
 	private Vector<Vector<Block>> gridLayout;
 	private String defaultLayout;
 	private int graceTimer;
+	private	int specialFrequency;
+	private int linesGenerated = 0;
 	//private int stopTimer;		// Currently not implemented.
 	
-	public Grid(TAGraphic myPanel, TAGraphic yourPanel, int[] constants, String startingLayout) {
+	public Grid(TAGraphic myPanel, TAGraphic yourPanel, Game.Cursor c, int[] constants, String startingLayout) {
 		super();
 				
 		// Parse our grid constants
@@ -45,8 +48,10 @@ public class Grid {
 		gridLayout = new Vector<Vector<Block>>();
 		gridPanel = myPanel;
 		enemyPanel = yourPanel;
+		associatedCursor = c;
 		newRow = new Vector<Block>();
 		rowGenerator = new layoutGenerator(constants);
+		specialFrequency = 0;
 		
 		GRID_STATUS = new Vector<String>();
 	}
@@ -60,7 +65,7 @@ public class Grid {
 		Vector<Block> tempRow = new Vector<Block>();
 		double panelBottom = gridPanel.getRelativeY() + gridPanel.getRelativeHeight();
 		double panelLeft = gridPanel.getRelativeX();
-		String newRow = rowGenerator.addRow("");
+		String newRow = rowGenerator.addRow("", specialFrequency);
 		
 		for (int i = 0; i < GRID_WIDTH; i++) {
 			Block newBlock = new Block(newRow.charAt(i));
@@ -431,11 +436,11 @@ public class Grid {
 		}
 		
 		if (!allComboBlocks.isEmpty()) {
-			boolean comboBeingAnimated = false;
 			if (comboCount > 3) { 
 				animateCombo(allComboBlocks, Integer.toString(comboCount)); 
-				comboBeingAnimated = true;
+				//do the attack :)
 			}
+			checkForSpecial(allComboBlocks);
 			//if (comboCount => 3 && GRID_STATUS.equals("FREEZE")
 			GRID_STATUS.add("FREEZE");
 			if (isTouchingGarbage(allComboBlocks)) { GRID_STATUS.add("GARBAGE_CLEAR"); }
@@ -552,6 +557,17 @@ public class Grid {
 			}
 		}
 		return nextBlock;
+	}
+	
+	private void checkForSpecial(Vector<Block> comboBlocks) {
+		int numberOfSpecials = 0;
+		for (Block b : comboBlocks) {
+			if (b.colour.equals("greySteel")) {
+				if (numberOfSpecials++ == 0) {
+					animateAttack(b.associatedGraphic);
+				}
+			}
+		}
 	}
 	
 	private void animateFlicker(Vector<Block> comboBlocks) {
@@ -691,6 +707,7 @@ public class Grid {
 		}
 		
 		eggComboGraphic.startAnimation();
+		//animateAttack goes here I believe?
 		
 	}
 	
@@ -821,7 +838,7 @@ public class Grid {
 					push = false;
 				}
 			}
-			Game.screenHandle.cursor.offset(0, -1);
+			associatedCursor.image.offset(0, -1);
 			index++;
 			
 			// Is this where we should see if the game 
@@ -841,9 +858,16 @@ public class Grid {
 			b.activateBlock();
 		}
 		gridLayout.insertElementAt(newRow, 0);
+		if (linesGenerated++ > 15) {
+			specialFrequency = 14;
+		} else if (linesGenerated > 10) {
+			specialFrequency = 21;
+		} else if (linesGenerated > 5) {
+			specialFrequency = 28;
+		}
 		//this.printGrid();
 		offsetGrid();
-		Game.screenHandle.cursorOffset(0,1);
+		Game.screenHandle.cursorOffset(associatedCursor, 0,1);
 		newRow = createRandomRow();
 	}
 	
@@ -986,7 +1010,7 @@ public class Grid {
 	public boolean checkGameOver() {
 		int filledHeight = trimGrid();
 		
-		if (filledHeight >= GRID_HEIGHT - 1) {
+		if (filledHeight > GRID_HEIGHT - 1) {
 			if (!hasGridStatus("STOP")) {
 				GRID_STATUS.add("STOP");
 				graceTimer = GRACE_TIME;

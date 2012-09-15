@@ -15,7 +15,7 @@ public class layoutGenerator {
 //	private static int GRIDHEIGHT = 15;
 	private static int NUMBLCKBEGIN = 30;
 	private static int MAXBEGINHEIGHT = 10;
-	private static String[] BLOCKS = {"e","1","2","3","4","5","6"}; //String placeholder for the empty block must be at index 0
+	private static String[] BLOCKS = {"e","1","2","3","4","5","6","s"}; //String placeholder for the empty block must be at index 0
 	private static int NUMDIFFBLCKS = 6;
 	
 	public layoutGenerator(){}
@@ -62,8 +62,7 @@ public class layoutGenerator {
 				layout = layout + BLOCKS[nb];	
 			}
 			if(loopCnt > 60){
-				System.out.println("\nProblem:");
-				System.out.println(nb + " not added to:");
+				System.out.println("layoutGenerator.randomStartLayout() - Problem:" + nb + " not added to:");
 				print(layout);
 			}
 		}
@@ -116,7 +115,29 @@ public class layoutGenerator {
 			if(chkRow(layout,BLOCKS[nb],newRow)){
 				newRow = newRow + BLOCKS[nb];
 			} else {
-				System.out.println("layoutGenerator.addRow(): **Element: "+ BLOCKS[nb] + " Failed, Current Generated Row: " + newRow);
+				// Generation debugging
+				//System.out.println("layoutGenerator.addRow(): **Element: "+ BLOCKS[nb] + " Failed, Current Generated Row: " + newRow);
+			}
+		}
+		return newRow;
+	}
+	
+	// Overload to allow the creation of 
+	public String addRow(String layout, double frequency){
+		String newRow = "";
+		while(newRow.length() < GRIDWIDTH)
+		{
+			int nb = (int)(Math.random() * (NUMDIFFBLCKS-1)+1);
+			// Sees if there is a chance of a special block appearing (controlled by grid / time).
+			int chanceOfAppearance = (int)(Math.random() * (frequency - 1) + 1);
+			if (chanceOfAppearance == frequency - 1 && frequency != 0) {
+				nb = BLOCKS.length - 1;
+			}
+			if(chkRow(layout,BLOCKS[nb],newRow)){
+				newRow = newRow + BLOCKS[nb];
+			} else {
+				// Generation debugging
+				//System.out.println("layoutGenerator.addRow(): **Element: "+ BLOCKS[nb] + " Failed, Current Generated Row: " + newRow);
 			}
 		}
 		return newRow;
@@ -144,9 +165,9 @@ public class layoutGenerator {
 			lines[i] = layout.substring(i*GRIDWIDTH, (i+1)*GRIDWIDTH);
 		}
 		lines[numLines] = layout.substring((numLines)*GRIDWIDTH,layout.length());
-		for(int i = numLines; i >= 0; i--){
-			System.out.println(lines[i]);
-		}
+		//for(int i = numLines; i >= 0; i--){
+		//	System.out.println(lines[i]);
+		//}
 	}
 	
 

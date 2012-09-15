@@ -93,11 +93,13 @@ public class Block {
 		} else if (c == '5') {
 			return "tealTriangle";
 		} else if (c == '6') {
-			return "blueSomething";
+			return "blueTriangle";
 		} else if (c == 'e') {
 			return "emptyBlock";
 		} else if (c == 'd') {
 			return "disappearingBlock";
+		} else if (c == 's') {
+			return "greySteel";
 		} else {
 			return "";
 		}

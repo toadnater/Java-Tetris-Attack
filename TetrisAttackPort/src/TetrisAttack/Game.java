@@ -16,11 +16,21 @@ class Game extends Screen {
 	//    that from being successful.
 	public static Game screenHandle;
 	
-	public Grid playerGrid;
+	protected class Cursor {
+		
+		TAGraphic image;
+		public double offset = 16;
+		public int posX = 0;				// Cursor parameters that mean more to us
+		public int posY = 0;				// than their (X,Y) coordinates in pixels.		
 	
-	public double cursor_offset = 16;
-	public int cursor_posX = 0;				// Cursor parameters that mean more to us
-	public int cursor_posY = 0;				// than their (X,Y) coordinates in pixels.
+		public Cursor() {
+			image = new TAGraphic("game_cursor");
+		}	
+	}
+	
+	public Grid grid[];
+	public Cursor gridCursor[];
+	public AIController AI;
 	
 	private			int		BLOCK_VARIETY = 5;		// Different block colour count (based on difficulty)
 	private 		int 	BLOCK_WIDTH = 16;
@@ -29,6 +39,9 @@ class Game extends Screen {
 	private final 	int 	STARTING_BLOCK_COUNT = 30;
 	private final	int 	WARNING_HEIGHT = 10;
 	public 	static	String	STATUS;
+	private final	int		NUMBER_OF_PLAYERS = 2;
+	private			int		PLAYER_INDEX = 0;
+	private 		int		AI_INDEX = 1;
 	
 	//public static final TAGraphic greenBlock = new TAGraphic("greenSquare");
 	//public static final TAGraphic redBlock = new TAGraphic("redHeart");
@@ -37,6 +50,7 @@ class Game extends Screen {
 	//public static final TAGraphic purpleBlock = new TAGraphic("purpleDiamond");
 		
 	TAGraphic panel1;
+	TAGraphic panel2;
 	
 	public Game() {
 		super();	
@@ -67,18 +81,29 @@ class Game extends Screen {
 		
 		// Animation moving cursor from top of screen to middle missing.
 		panel1 = new TAGraphic("panel_yoshi");
-		TAGraphic panel2 = new TAGraphic("panel_lakitu");
-		setCursor(new TAGraphic("game_cursor"));
+		panel2 = new TAGraphic("panel_lakitu");
+		//setCursor(new TAGraphic("game_cursor"));
 		panel1.location(8, 23);
 		panel2.location(152, 23);
-		cursor.location(panel1.getRelativeCenterX() - 1 - (cursor.getRelativeWidth() / 2), 
-				(8 * 16) - 1 - (cursor.getRelativeHeight() / 2));
-		cursorPosition(2, 5);	
-		addImage(cursor);
+		
+		gridCursor = new Cursor[2];
+		gridCursor[0] = new Cursor();
+		gridCursor[1] = new Cursor();
+		gridCursor[PLAYER_INDEX].image.location(panel1.getRelativeCenterX() - 1 - (gridCursor[PLAYER_INDEX].image.getRelativeWidth() / 2), 
+				(8 * 16) - 1 - (gridCursor[PLAYER_INDEX].image.getRelativeHeight() / 2));
+		gridCursor[1].image.location(panel2.getRelativeCenterX() - 1 - (gridCursor[1].image.getRelativeWidth() / 2), 
+				(8 * 16) - 1 - (gridCursor[1].image.getRelativeHeight() / 2));
+				
+		cursorPosition(gridCursor[0], 2, 5);
+		cursorPosition(gridCursor[1], 2, 5);
+		
+		addImage(gridCursor[0].image);
+		addImage(gridCursor[1].image);
 		
 		// We need to set up each player's working space with blocks laid out.
 		
 		Player player1 = new Player();
+		//AI = new AIController();
 		
 		int[] gridConstants = { BLOCK_VARIETY, 
 								BLOCK_WIDTH,
@@ -90,10 +115,15 @@ class Game extends Screen {
 		
 		layoutGenerator gridGenerator = new layoutGenerator(gridConstants);
 		String startingLayout = gridGenerator.randomStartLayout();
+				
+		grid = new Grid[2];
 		
-		playerGrid = new Grid(panel1, panel2, gridConstants, startingLayout);
-		playerGrid.createGrid();
-		playerGrid.layoutGrid();
+		grid[0] = new Grid(panel1, panel2, gridCursor[0], gridConstants, startingLayout);
+		grid[1] = new Grid(panel2, panel1, gridCursor[1], gridConstants, startingLayout);
+		grid[0].createGrid();
+		grid[0].layoutGrid();
+		grid[1].createGrid();
+		grid[1].layoutGrid();
 		
 		setBackground(new TAGraphic("vs_bg_lakitu")); 
 		addImage(panel1);					// Done over here because of foreground -> background rules
@@ -107,27 +137,29 @@ class Game extends Screen {
 		STATUS = "RUNNING";
 	}
 	
-	public void cursorOffset(int x, int y) {
-		cursor_posX += x;
-		cursor_posY += y;
+	public void cursorOffset(Cursor c, int x, int y) {
+		c.posX += x;
+		c.posY += y;
 	}
 	
-	public void cursorPosition(int x, int y) {
-		cursor_posX = x;
-		cursor_posY = y;
+	public void cursorPosition(Cursor c, int x, int y) {
+		c.posX = x;
+		c.posY = y;
 	}
 	
-	public boolean cursorHasLeft() { return (cursor_posX - 1 >= 0);	}
-	public boolean cursorHasRight() { return (cursor_posX + 1 < GRID_WIDTH - 1); }	// Because the cursor is 2 lengths wide
-	public boolean cursorHasDown() { return (cursor_posY - 1 >= 0); }
-	public boolean cursorHasUp() { return (cursor_posY + 1 < GRID_HEIGHT); }
+	public boolean cursorHasLeft(Cursor c) { return (c.posX - 1 >= 0);	}
+	public boolean cursorHasRight(Cursor c) { return (c.posX + 1 < GRID_WIDTH - 1); }	// Because the cursor is 2 lengths wide
+	public boolean cursorHasDown(Cursor c) { return (c.posY - 1 >= 0); }
+	public boolean cursorHasUp(Cursor c) { return (c.posY + 1 < GRID_HEIGHT); }
 	
 	// ===================================================
 	
     protected void specialEvents(int time) {
     	if (time % 15 == 0 && STATUS.equals("RUNNING")) {
-    		if (playerGrid.hasGridStatus()) {
-    			playerGrid.pushGrid(0.1);
+    		for (int t = 0; t < NUMBER_OF_PLAYERS; t++) {
+	    		if (grid[t].hasGridStatus()) {
+	    			grid[t].pushGrid(0.1);
+	    		}
     		}
     	}
     	
@@ -136,17 +168,22 @@ class Game extends Screen {
     	}
     	
     	if (STATUS.equals("RUNNING")) {
-    		playerGrid.checkFalling();
-    		playerGrid.applyGravity();
-    		playerGrid.checkCombos();
-    		playerGrid.disappearBlocks();
-    		if (playerGrid.checkGameOver()) {
-    			STATUS = "GAMEOVER";
-    			// Do game over stuff here :)
+    		for (int t = 0; t < NUMBER_OF_PLAYERS; t++) {
+	    		grid[t].checkFalling();
+	    		grid[t].applyGravity();
+	    		grid[t].checkCombos();
+	    		grid[t].disappearBlocks();
+	    		if (grid[t].checkGameOver()) {
+	    			STATUS = "GAMEOVER";
+	    			
+	    			// Do game over stuff here :)
+	    		}
     		}
     	}
-    	setComponentZOrder(cursor, 1);
+    	setComponentZOrder(gridCursor[0].image, 1);
+    	setComponentZOrder(gridCursor[1].image, 1);
 		setComponentZOrder(panel1, getComponentCount() - 1);
+		setComponentZOrder(panel2, getComponentCount() - 1);
 		setComponentZOrder(backgroundImage, 1);
     }
     
@@ -157,65 +194,72 @@ class Game extends Screen {
 	// KEYBOARD FUNCTIONS FOR THIS OBJECT
 	// ---------------------------------------
     
-    public void actionDown() {
+    public void actionDown() { actionDown(PLAYER_INDEX); }
+    public void actionDown(int index) {
     	if (STATUS.equals("RUNNING")) {
-			if (cursorHasDown()) {
-				cursor.offset(0, (int)(cursor_offset * Main.globalScale));
-				cursorOffset(0, -1);
+			if (cursorHasDown(gridCursor[index])) {
+				gridCursor[index].image.offset(0, (int)(gridCursor[index].offset * Main.globalScale));
+				cursorOffset(gridCursor[index], 0, -1);
 			}
     	}
     }
     
-    public void actionUp() {
+    public void actionUp() { actionUp(PLAYER_INDEX); }
+    public void actionUp(int index) {
     	if (STATUS.equals("RUNNING")) {
-	    	if (cursorHasUp()) {
-	    		cursor.offset(0, (int)(-cursor_offset * Main.globalScale));
-	    		cursorOffset(0, 1);
+	    	if (cursorHasUp(gridCursor[index])) {
+	    		gridCursor[index].image.offset(0, (int)(-gridCursor[index].offset * Main.globalScale));
+	    		cursorOffset(gridCursor[index], 0, 1);
 	    	}
     	}
     }
     
-    public void actionLeft() {
+    public void actionLeft() { actionLeft(PLAYER_INDEX); }
+    public void actionLeft(int index) {
     	if (STATUS.equals("RUNNING")) {
-	    	if (cursorHasLeft()) {
-	    		cursor.offset((int)(-cursor_offset * Main.globalScale), 0);
-	    		cursorOffset(-1, 0);
+	    	if (cursorHasLeft(gridCursor[index])) {
+	    		gridCursor[index].image.offset((int)(-gridCursor[index].offset * Main.globalScale), 0);
+	    		cursorOffset(gridCursor[index], -1, 0);
 	    	}
     	}
     }
     
-    public void actionRight() {
+    public void actionRight() { actionRight(PLAYER_INDEX); }
+    public void actionRight(int index) {
     	if (STATUS.equals("RUNNING")) {
-	    	if (cursorHasRight()) {
-	    		cursor.offset((int)(cursor_offset * Main.globalScale), 0);
-	    		cursorOffset(1, 0);
+	    	if (cursorHasRight(gridCursor[PLAYER_INDEX])) {
+	    		gridCursor[index].image.offset((int)(gridCursor[index].offset * Main.globalScale), 0);
+	    		cursorOffset(gridCursor[index], 1, 0);
 	    	}
     	}
     }
     	
-    public void actionZ() {
+    public void actionZ() { actionZ(PLAYER_INDEX); }
+    public void actionZ(int index) {
     	System.out.println("Screen? " + this.getName());
     			//isAncestorOf
     }
     
-    public void actionX() {						// Ok button
+    public void actionX() { actionX(PLAYER_INDEX); }
+    public void actionX(int index) {						// Ok button
     	if (STATUS.equals("RUNNING")) {
-    		System.out.println("Left: " + playerGrid.getBlockColour(cursor_posX, cursor_posY));
-    		System.out.println("Right: " + playerGrid.getBlockColour(cursor_posX + 1, cursor_posY));
-    		playerGrid.swapBlocks(cursor_posX, cursor_posY);
+    		System.out.println("Left: " + grid[index].getBlockColour(gridCursor[index].posX, gridCursor[index].posY));
+    		System.out.println("Right: " + grid[index].getBlockColour(gridCursor[index].posX + 1, gridCursor[index].posY));
+    		grid[index].swapBlocks(gridCursor[index].posX, gridCursor[index].posY);
     	}
     }	
-    
-    public void actionS() {
+    public void actionS() { actionS(PLAYER_INDEX); }
+    public void actionS(int index) {
     	if (STATUS.equals("RUNNING")) {
     		// For loop makes it look smooth and also forces the issue
-    		playerGrid.pushGrid(1);
+    		grid[index].pushGrid(1);
     	}
     }
     
-    public void actionA() {
+    public void actionA() { actionA(PLAYER_INDEX); }
+    public void actionA(int index) {
     	if (STATUS.equals("RUNNING")) {
-    		playerGrid.createGarbage();
+    		grid[index].createGarbage();
     	}
     	
     }
@@ -226,7 +270,8 @@ class Game extends Screen {
     	} else {
     		STATUS = "RUNNING";
     	}
-		playerGrid.printGrid();
+    	grid[0].printGrid();
+    	grid[1].printGrid();
     }
     
     public void actionPlus() {
@@ -237,5 +282,16 @@ class Game extends Screen {
     	changeTimerSpeed(2);
     }
 
+    public void parseAiInstruction(AIController.AIInstruction instruction) {
+    	switch(instruction) {
+    		case MOVE_LEFT: actionLeft(AI_INDEX);
+    		case MOVE_RIGHT: actionRight(AI_INDEX);
+    		case MOVE_UP: actionUp(AI_INDEX);
+    		case MOVE_DOWN: actionDown(AI_INDEX);
+    		case SWAP: actionX(AI_INDEX);
+    		case PUSH: actionS(AI_INDEX);
+    		case IDLE:	// Do nothing
+    		default:	// Unhandled case 
+    	}
+    }   
 }
-
