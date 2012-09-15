@@ -1,0 +1,53 @@
+current bugs:
+
+GAMEPLAY:
+
+September 10, 2012
+-- If a player moves fast enough, they can move blocks over top of empty spaces
+   very quickly in succession to have blocks float over more than one empty
+   space before they will stop falling. If the time the player manages to make
+   more than one move is less than one clock cycle (which also checks to see if a
+   block is in animation (the swapping animation for instance) before allowing
+   this block to start falling).
+   === Possible fix includes checkFalling() every time a player performs a swap (either
+       in the swap code or on buttons Z or X are pressed).
+
+September 3, 2012
+--  I think the square_falling / dropping animation needs to be slowed down
+    by using a different animation instead of the same one used for swapping
+    blocks.
+
+GRAPHICS / RESIZING:
+
+September 10, 2012
+-- When blocks fall, they still do not play a wobbling animation. Just sayin'.
+
+August 28, 2012
+-- 	Reverse instructions only does half before it starts going backwards...
+-- 	Floating point / rounding error in TransitionMenu() is causing the last value of Y
+	to become distorted and move by +/- 1 pixels.
+--  If window is resized before game starts, the cursor doesn't move up the screen at the
+    same speed as the blocks. (The blocks take global scale into account, the cursor does not)
+
+	
+OTHER:
+
+September 3, 2012
+--  Memory problem: allGraphics (and presumably animatedGraphics) vectors
+    are constantly growing with new Blocks taking up memory and are never
+    being resized. The old blocks are not being disposed of properly so if
+    the game goes on for too long, memory usage becomes an issue.
+    
+September 6, 2012
+-- Might be a good idea to make the Grid() a static object that the blocks themselves can manipulate
+   with their setGridLocation() methods, instead of the grid doing it and then passing it along
+   and just hoping that it all stays in sync. This way, each block deals with their own place on the
+   grid and to manipulate it, you have to go directly through the block that is sitting there.
+   Or I guess you could overwrite it with another block, but then that block will never be addressed
+   again... Hmmmmm
+   Either way, the lack of a proper "pointing" system is causing problems.
+    
+    
+    
+    
+    

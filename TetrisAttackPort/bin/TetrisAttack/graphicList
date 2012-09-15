@@ -1,0 +1,105 @@
+/* graphicList - Plain Text File
+ *
+ * Keeps track of all our graphic items and where they are located
+ * relative to the assets/img/ folder for the project
+ *
+ * Graphic item names must be unique, otherwise creating a graphic
+ * will select the first instance of the given name.
+ *
+ * For graphics that have multiple frames, simply list them in order
+ * on the same line as the graphic name.
+ */
+
+// Menu Items
+menu_yoshi: menu/yoshi01.png
+menu_yoshiShadow: menu/yoshi_shadow1.png menu/yoshi_shadow2.png
+menu_cursor: menu/cursor.png
+menu_top: menu/menuBox_blue/menuBox1_1.png menu/menuBox_blue/menuBox1_2.png menu/menuBox_blue/menuBox1_3.png menu/menuBox_blue/menuBox1_4.png menu/menuBox_blue/menuBox1_5.png menu/menuBox_blue/menuBox1_6.png menu/menuBox_blue/menuBox1_7.png menu/menuBox_blue/menuBox1_8.png menu/menuBox_blue/menuBox1_9.png menu/menuBox_blue/menuBox1_10.png menu/menuBox_blue/menuBox1_11.png menu/menuBox_blue/menuBox1_12.png menu/menuBox_blue/menuBox1_13.png menu/menuBox_blue/menuBox1_14.png
+menu_box1Shadow: menu/menuBox_blue/MenuBox1_shadow.png
+menu_speechWindow: menu/speechWindow.png
+menu_background: menu/background.jpg
+aisokbutton: menu/aisokbutton.png
+biscancelbutton: menu/biscancelbutton.png
+
+overlay_blue: menu/overlay_blue.png
+
+-- Items for the first menu
+selectWindow: menu/selectWindow.png
+selectWindow_shadow: menu/selectWindow_shadow.png
+1playergame: menu/buttons/1playergame_1.png menu/buttons/1playergame_2.png
+2playergame: menu/buttons/2playergame_1.png menu/buttons/2playergame_2.png
+howtoplay: menu/buttons/howtoplay_1.png menu/buttons/howtoplay_2.png
+howtoimprove: menu/buttons/howtoimprove_1.png menu/buttons/howtoimprove_2.png
+option: menu/buttons/option_1.png menu/buttons/option_2.png
+
+-- Items for 1P & 2P Game menus
+timetrial: menu/buttons/timetrial_1.png menu/buttons/timetrial_2.png
+versus: menu/buttons/versus_1.png menu/buttons/versus_2.png
+
+-- Items for 1P Game menu
+endless: menu/buttons/endless_1.png menu/buttons/endless_2.png
+stageclear: menu/buttons/stageclear_1.png menu/buttons/stageclear_2.png
+puzzle: menu/buttons/puzzle_1.png menu/buttons/puzzle_2.png
+
+
+// Other
+-- Shared Assets between all modes
+game_cursor: cursor.png
+
+-- Versus Assets
+redBrick: versus/brick_red.png
+blueBrick: versus/brick_blue.png
+
+panel_yoshi: versus/panels/yoshi.png
+panel_penguin: versus/panels/penguin.png
+panel_lakitu: versus/panels/lakitu.png
+
+vs_bg_lakitu: versus/bgs/bg_lakitu.png
+
+-- Blocks!
+emptyBlock: emptySquare.png emptySquare.png
+redHeart: redHeart_disabled.png redHeart_default.png redHeart_flashing.png redHeart_end.png redHeart_squish1.png redHeart_squish2.png redHeart_squish3.png
+greenSquare: greenSquare_disabled.png greenSquare_default.png greenSquare_flashing.png greenSquare_end.png greenSquare_squish1.png greenSquare_squish2.png greenSquare_squish3.png
+yellowStar: yellowStar_disabled.png yellowStar_default.png yellowStar_flashing.png yellowStar_end.png yellowStar_squish1.png yellowStar_squish2.png yellowStar_squish3.png
+tealTriangle: tealTriangle_disabled.png tealTriangle_default.png tealTriangle_flashing.png tealTriangle_end.png tealTriangle_squish1.png tealTriangle_squish2.png tealTriangle_squish3.png
+purpleDiamond: purpleDiamond_disabled.png purpleDiamond_default.png purpleDiamond_flashing.png purpleDiamond_end.png purpleDiamond_squish1.png purpleDiamond_squish2.png purpleDiamond_squish3.png
+
+disappearingBlock: animations/block_dis_001.png animations/block_dis_002.png animations/block_dis_003.png animations/block_dis_004.png animations/block_dis_005.png animations/block_dis_006.png animations/block_dis_007.png animations/block_dis_008.png animations/block_dis_009.png animations/block_dis_010.png animations/block_dis_011.png animations/block_dis_012.png
+eggCombo: animations/eggComboAnimation01.png animations/eggComboAnimation02.png animations/eggComboAnimation03.png animations/eggComboAnimation04.png animations/eggComboAnimation05.png animations/eggComboAnimation06.png animations/eggComboAnimation07.png animations/eggComboAnimation08.png animations/eggComboAnimation09.png animations/eggComboAnimation10.png animations/eggComboAnimation11.png animations/eggComboAnimation12.png animations/eggComboAnimation13.png animations/eggComboAnimation14.png
+attackEgg: versus/attackEgg.png
+
+garbagePlaceholder: versus/garbagePlaceholder.png versus/garbagePlaceholder.png
+garbageHit: versus/garbageHit.png versus/garbageHit_flashing.png
+
+-- Combos:
+combo4: combo4.png
+combo5: combo5.png
+combo6: combo6.png
+combo7: combo7.png
+combo8: combo8.png
+combo9: combo9.png
+combo10: combo10.png
+combo11: combo11.png
+combo12: combo12.png
+combox2: combox2.png
+combox3: combox3.png
+combox4: combox4.png
+combox5: combox5.png
+combox6: combox6.png
+combox7: combox7.png
+combox8: combox8.png
+combox9: combox9.png
+combox10: combox10.png
+combox11: combox11.png
+combox12: combox12.png
+combox: combox.png
+
+
+
+
+
+
+
+
+
+
