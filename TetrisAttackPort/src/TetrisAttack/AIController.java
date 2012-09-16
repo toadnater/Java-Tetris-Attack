@@ -6,7 +6,11 @@ import java.util.Vector;
 /**
  * 
  * @author Toadnater
+<<<<<<< HEAD
  * Huzzah!
+=======
+ * Look this is me! :)
+>>>>>>> branch 'master' of https://github.com/toadnater/Java-Tetris-Attack.git
  */
 public abstract class AIController {
 	
