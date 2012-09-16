@@ -78,7 +78,7 @@ class TAGraphic extends JLabel {
 	private boolean LoadGraphics(String graphicName) {
 		try {
 			String graphicPath = getPath(graphicName, "src/TetrisAttack/graphicList");
-			// System.out.println("TAGraphic.LoadGraphics() - Creating image: " + graphicName + " @ " + graphicPath);
+			System.out.println("TAGraphic.LoadGraphics() - Creating image: " + graphicName + " @ " + graphicPath);
 			
 			if (!graphicPath.isEmpty()) {
 				ArrayList<String> paths = loadPaths(graphicPath);

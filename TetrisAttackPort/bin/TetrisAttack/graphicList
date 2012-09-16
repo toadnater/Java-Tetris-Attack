@@ -63,6 +63,9 @@ greenSquare: greenSquare_disabled.png greenSquare_default.png greenSquare_flashi
 yellowStar: yellowStar_disabled.png yellowStar_default.png yellowStar_flashing.png yellowStar_end.png yellowStar_squish1.png yellowStar_squish2.png yellowStar_squish3.png
 tealTriangle: tealTriangle_disabled.png tealTriangle_default.png tealTriangle_flashing.png tealTriangle_end.png tealTriangle_squish1.png tealTriangle_squish2.png tealTriangle_squish3.png
 purpleDiamond: purpleDiamond_disabled.png purpleDiamond_default.png purpleDiamond_flashing.png purpleDiamond_end.png purpleDiamond_squish1.png purpleDiamond_squish2.png purpleDiamond_squish3.png
+blueTriangle: blueTriangle_disabled.png blueTriangle_default.png blueTriangle_flashing.png blueTriangle_end.png
+
+greySteel: greySteel_disabled.png greySteel_default.png greySteel_flashing.png greySteel_end.png greySteel_squish1.png greySteel_squish2.png greySteel_squish3.png
 
 disappearingBlock: animations/block_dis_001.png animations/block_dis_002.png animations/block_dis_003.png animations/block_dis_004.png animations/block_dis_005.png animations/block_dis_006.png animations/block_dis_007.png animations/block_dis_008.png animations/block_dis_009.png animations/block_dis_010.png animations/block_dis_011.png animations/block_dis_012.png
 eggCombo: animations/eggComboAnimation01.png animations/eggComboAnimation02.png animations/eggComboAnimation03.png animations/eggComboAnimation04.png animations/eggComboAnimation05.png animations/eggComboAnimation06.png animations/eggComboAnimation07.png animations/eggComboAnimation08.png animations/eggComboAnimation09.png animations/eggComboAnimation10.png animations/eggComboAnimation11.png animations/eggComboAnimation12.png animations/eggComboAnimation13.png animations/eggComboAnimation14.png
