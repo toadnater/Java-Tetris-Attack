@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * 
  * @author Toadnater
- *
+ * Huzzah!
  */
 public abstract class AIController {
 	
