@@ -59,6 +59,8 @@ public class Grid {
 	public boolean hasGridStatus(String status) { return GRID_STATUS.contains(status); }
 	public boolean hasGridStatus() { return GRID_STATUS.isEmpty(); }
 	
+	public Vector<Vector<Block>> returnGrid() { return gridLayout; }
+	
 	public Vector<Block> createRandomRow() {
 		// Returns a Vector of randomly generated blocks
 		

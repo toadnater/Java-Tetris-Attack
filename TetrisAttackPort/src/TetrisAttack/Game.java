@@ -8,6 +8,10 @@ import javax.swing.Timer;
 
 class Game extends Screen {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// This static Screen variable is used for the creation of new blocks.
 	// When a new block is made it is added to an allGraphics vector that belongs
 	// to the screen (which Game is derived from). This handle can then be reached by
@@ -103,7 +107,8 @@ class Game extends Screen {
 		// We need to set up each player's working space with blocks laid out.
 		
 		Player player1 = new Player();
-		//AI = new AIController();
+		
+		AI = new ToddsAI();
 		
 		int[] gridConstants = { BLOCK_VARIETY, 
 								BLOCK_WIDTH,
@@ -161,10 +166,18 @@ class Game extends Screen {
 	    			grid[t].pushGrid(0.1);
 	    		}
     		}
+
+			AI.updateHomeGrid(grid[AI_INDEX].returnGrid());
+			AI.updateAwayGrid(grid[PLAYER_INDEX].returnGrid());
+    	}
+    	
+    	if (time % (60 / 16) == 0 && STATUS.equals("RUNNING")) {
+    		parseAiInstruction(AI.getNextInstruction());
     	}
     	
     	if (!STATUS.equals("PAUSED")) {
     		playAnimations();
+    		AI.calculateNextInstruction();
     	}
     	
     	if (STATUS.equals("RUNNING")) {
