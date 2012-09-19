@@ -13,11 +13,13 @@ public class Block {
 	private boolean falling;
 	private boolean garbage;
 	private boolean fallRequest;
+	private Block comboOrigin;
 				
 	public Block() {
 		active = false;
 		falling = false;
 		garbage = false;
+		comboOrigin = null;
 		fallRequest = false;	// Used in GarbageBlocks only.
 	}
 		
@@ -76,10 +78,12 @@ public class Block {
 	public void setFallRequest(boolean set) { fallRequest = set; }
 	public void setColour(String set) { colour = set; }
 	public void setVisible(boolean set) { associatedGraphic.setVisible(set); }
+	public void setComboOrigin(Block set) { comboOrigin = set; }
 	public boolean isFalling() { return falling; }
 	public boolean isActive() { return active; }
 	public boolean isGarbage() { return garbage; }
 	public boolean isFallRequested() { return fallRequest; }
+	public Block getComboOrigin() { return comboOrigin; }
 	
 	public String convertCharToColour(char c) {
 		if (c == '1') {

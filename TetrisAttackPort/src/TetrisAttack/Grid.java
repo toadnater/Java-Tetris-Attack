@@ -18,6 +18,7 @@ public class Grid {
 	
 	//-----------------------------------------------------------------------------------------------
 	
+	// Semaphor used to see if there is a garbageBlock already being animated before we start animating another one.
 	public static GarbageBlock GarbageSemaphor = null;
 
 	private Vector<String> GRID_STATUS;
@@ -821,6 +822,10 @@ public class Grid {
 		// Range: 0.00 - 1.00 (percent %)
 		// Increment is essentially the speed or rate at which we push up all
 		// the graphics for this new row and the grid.
+		
+		if (hasGridStatus("GARBAGE_CLEAR") || hasGridStatus("FREEZE")) {
+			return;
+		}
 		
 		int index = 0;
 		int moves = (int)(BLOCK_WIDTH * increment);

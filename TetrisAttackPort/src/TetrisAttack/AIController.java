@@ -36,7 +36,7 @@ public abstract class AIController {
 	/**
 	 *  Abstract method called when the instruction cannot be completed due to a logical error.
 	 */
-	public abstract void logicalError();
+	//public abstract void logicalError();
 	
 	/**
 	 * 
