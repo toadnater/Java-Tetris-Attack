@@ -79,10 +79,11 @@ public class Block {
 	public void setColour(String set) { colour = set; }
 	public void setVisible(boolean set) { associatedGraphic.setVisible(set); }
 	public void setComboOrigin(Block set) { comboOrigin = set; }
-	public boolean isFalling() { return falling; }
+	public boolean isFalling() { return falling; } 
 	public boolean isActive() { return active; }
 	public boolean isGarbage() { return garbage; }
 	public boolean isFallRequested() { return fallRequest; }
+	public boolean isEmptyBlock() { return colour.equals("emptyBlock"); }
 	public Block getComboOrigin() { return comboOrigin; }
 	
 	public String convertCharToColour(char c) {

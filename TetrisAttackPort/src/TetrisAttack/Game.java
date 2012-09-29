@@ -47,6 +47,10 @@ class Game extends Screen {
 	private			int		PLAYER_INDEX = 0;
 	private 		int		AI_INDEX = 1;
 	
+	private 		boolean	checkForGameOver;
+	
+	private 		int		sendGarbageBlocks;
+	
 	//public static final TAGraphic greenBlock = new TAGraphic("greenSquare");
 	//public static final TAGraphic redBlock = new TAGraphic("redHeart");
 	//public static final TAGraphic yellowBlock = new TAGraphic("yellowStar");
@@ -109,6 +113,7 @@ class Game extends Screen {
 		Player player1 = new Player();
 		
 		AI = new ToddsAI();
+		checkForGameOver = false;
 		
 		int[] gridConstants = { BLOCK_VARIETY, 
 								BLOCK_WIDTH,
@@ -184,15 +189,18 @@ class Game extends Screen {
     		for (int t = 0; t < NUMBER_OF_PLAYERS; t++) {
 	    		grid[t].checkFalling();
 	    		grid[t].applyGravity();
-	    		grid[t].checkCombos();
+	    		if ((sendGarbageBlocks = grid[t].checkCombos()) > 0) {
+	    			sendGarbage(t, sendGarbageBlocks);
+	    		}
 	    		grid[t].disappearBlocks();
-	    		if (grid[t].checkGameOver()) {
+	    		grid[t].garbageDropCheck();
+	    		if (grid[t].checkGameOver() && checkForGameOver) {
 	    			STATUS = "GAMEOVER";
-	    			
 	    			// Do game over stuff here :)
 	    		}
     		}
     	}
+    	
     	setComponentZOrder(gridCursor[0].image, 1);
     	setComponentZOrder(gridCursor[1].image, 1);
 		setComponentZOrder(panel1, getComponentCount() - 1);
@@ -202,6 +210,18 @@ class Game extends Screen {
     
     public void specialReloadsOnResize() {
     }
+    
+    // =======================================
+    // Special game functions
+    // =======================================
+    public void sendGarbage(int playerFrom, int garbageCount) {
+    	for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
+    		if (i != playerFrom) {
+    			grid[i].receiveGarbage(garbageCount);
+    		}
+    	}
+    }
+    
     
     // ---------------------------------------
 	// KEYBOARD FUNCTIONS FOR THIS OBJECT
@@ -271,10 +291,7 @@ class Game extends Screen {
     
     public void actionA() { actionA(PLAYER_INDEX); }
     public void actionA(int index) {
-    	if (STATUS.equals("RUNNING")) {
-    		grid[index].createGarbage();
-    	}
-    	
+    	actionS(index);
     }
     public void actionP() {
     	// Pause button :)
@@ -283,8 +300,10 @@ class Game extends Screen {
     	} else {
     		STATUS = "RUNNING";
     	}
-    	grid[0].printGrid();
-    	grid[1].printGrid();
+    	//grid[0].printGrid();
+    	//grid[1].printGrid();
+    	grid[0].printGarbageSlots();
+    	grid[1].printGarbageSlots();
     }
     
     public void actionPlus() {

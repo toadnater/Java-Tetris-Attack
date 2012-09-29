@@ -13,7 +13,7 @@ public class Grid {
 	private final 	int 	STARTING_BLOCK_COUNT;
 	private final	int 	WARNING_HEIGHT;			// When warning music would play or STOP would be triggered.
 	private 		int 	STOP_TIME = 60 * 1;		// The time the grid would traditionally stop before automatically pushing up the grid again.
-	private 		int 	GRACE_TIME = 60 * 3;	// The grace time when the blocks reach the top of the grid.
+	private 		int 	GRACE_TIME = 60 * 2;	// The grace time when the blocks reach the top of the grid.
 													// Measured in clock_cycles (60fps * seconds)
 	
 	//-----------------------------------------------------------------------------------------------
@@ -32,6 +32,11 @@ public class Grid {
 	private int graceTimer;
 	private	int specialFrequency;
 	private int linesGenerated = 0;
+	private Vector<Block> chainBlock;
+	private int chainCount;
+	private int garbageTimer;
+	private int[] garbageSlot = {0, 0, 0, 0};
+	private int garbageSlotIndex = 0;
 	//private int stopTimer;		// Currently not implemented.
 	
 	public Grid(TAGraphic myPanel, TAGraphic yourPanel, Game.Cursor c, int[] constants, String startingLayout) {
@@ -53,6 +58,7 @@ public class Grid {
 		newRow = new Vector<Block>();
 		rowGenerator = new layoutGenerator(constants);
 		specialFrequency = 0;
+		chainBlock = new Vector<Block>();
 		
 		GRID_STATUS = new Vector<String>();
 	}
@@ -287,10 +293,18 @@ public class Grid {
 	
 	private void finalizeSwap(Block B1, Block B2) {
 		
+		// Set each block's comboBlock parent to swap to (so that it stays still).
+		/*
+		Block block1 = new Block();	block1 = B1.getComboOrigin();
+		Block block2 = new Block(); block2 = B2.getComboOrigin();
+		
+		B1.setComboOrigin(block2);
+		B2.setComboOrigin(block1);
+		*/
+		// Set each block's grid locations to new settings
 		int X1 = B1.grid_x; int Y1 = B1.grid_y;
 		int X2 = B2.grid_x; int Y2 = B2.grid_y;
 		
-		// Set each block's grid locations to new settings
 		gridLayout.get(Y1).get(X1).setGridLocation(X2, Y2);
 		gridLayout.get(Y2).get(X2).setGridLocation(X1, Y1);
 		
@@ -319,7 +333,7 @@ public class Grid {
 		for (Vector<Block> row : gridLayout) {
 			if (gridLayout.lastElement() == row) { break; }			// Because if its the very top of the stack there should be noting falling from above :P
 			for (Block b : row) {
-				if (b.colour.equals("emptyBlock")) {
+				if (b.isEmptyBlock()) {
 					int aboveY = b.grid_y + 1;
 					int thisX = b.grid_x;
 					if (!getBlockColour(thisX, aboveY).equals("emptyBlock")) {
@@ -337,7 +351,7 @@ public class Grid {
 		
 	}
 	
-	public void checkCombos() {
+	public int checkCombos() {
 		// This will use code similar to our applyGravity() method.
 		// Instead of checking for empty blocks above though, we're
 		// going to check for blocks of the same kind above and if there
@@ -345,11 +359,12 @@ public class Grid {
 		
 		Vector<Block> allComboBlocks = new Vector<Block>();
 		int comboCount = 0;
+		int sendGarbageCount = 0;
 		
 		for (Vector<Block> row : gridLayout) {
 			//if (gridLayout.lastElement() == row) { break; }
 			for (Block baseBlock : row) {
-				if (!(baseBlock.colour.equals("emptyBlock")) && !(baseBlock.isGarbage())) {	
+				if (!(baseBlock.isEmptyBlock()) && !(baseBlock.isGarbage())) {	
 					int baseY = baseBlock.grid_y;
 					int baseX = baseBlock.grid_x;
 					String baseColour = baseBlock.colour;
@@ -370,16 +385,12 @@ public class Grid {
 					// Checking for vertical line combos
 					
 					int vertComboCount = 1;
-					boolean comboFromFall = false;
 					for (int i = baseY + 1; i < GRID_HEIGHT; i++) {
 						if (getBlockColour(baseX, i).equals(baseColour)) {
 							// If this block isn't already in some sort of animation
 							// (like another combo), then we can use it.
 							if (gridLayout.get(i).get(baseX).isActive() &&
 								!gridLayout.get(i).get(baseX).isFalling() ) {
-								if (gridLayout.get(i).get(baseX).associatedGraphic.animation.isPlaying()) {
-									comboFromFall = true;
-								}
 								vertComboBlocks.add(gridLayout.get(i).get(baseX));
 								vertComboCount++;
 							}
@@ -432,27 +443,36 @@ public class Grid {
 							}
 						}
 					}
-					
-					if (comboFromFall) { System.out.println("Combo from a fall?"); }
 				}
 			}
 		}
 		
-		if (!allComboBlocks.isEmpty()) {
+		if (!allComboBlocks.isEmpty()) {			
 			if (comboCount > 3) { 
 				animateCombo(allComboBlocks, Integer.toString(comboCount)); 
-				//do the attack :)
+				sendGarbageCount += comboCount - 1;
 			}
-			checkForSpecial(allComboBlocks);
-			//if (comboCount => 3 && GRID_STATUS.equals("FREEZE")
+			if (checkForSpecial(allComboBlocks) >= 3) {
+				sendGarbageCount += 100;
+				// -- Remainder of extra garbage blocks
+			}
+			if (comboCount > 2) {
+				checkChain(allComboBlocks);
+				declareChain(allComboBlocks);
+				//sendGarbageCount += 6;		// I believe it caps at 6.
+			}
+
 			GRID_STATUS.add("FREEZE");
 			if (isTouchingGarbage(allComboBlocks)) { GRID_STATUS.add("GARBAGE_CLEAR"); }
 			// If there is a combo with more than 4 blocks in it, then we declare it as a uniform combo!
-			
 			animateFlicker(allComboBlocks);								
 			// animate them here so that they become "PLAYING" and are not calculated
 			// in upcoming checks.
+		
+			System.out.println("Grid.checkCombos(): Sending garbage: " + sendGarbageCount);
 		}
+		
+		return sendGarbageCount;
 	}
 	
 	// Overload for checking garbage blocks using the parent
@@ -562,15 +582,48 @@ public class Grid {
 		return nextBlock;
 	}
 	
-	private void checkForSpecial(Vector<Block> comboBlocks) {
+	private void checkChain(Vector<Block> comboBlocks) {
+		for (Block b : comboBlocks) {
+			if (chainBlock.contains(b.getComboOrigin())) {
+				System.out.println("Grid.checkChain(): Result of chain?");
+				System.out.println("Grid.checkChain(): Chain count: " + ++chainCount);
+				return;
+			}
+		}
+	}
+	
+	private void declareChain(Vector<Block> comboBlocks) {
+		int tempChainCount = 0;
+		Vector<Block> tempChainBlock = new Vector<Block>();
+		
+		for (Block b : comboBlocks) {
+			int currentY = b.grid_y;
+			int currentX = b.grid_x;
+			for (int h = currentY; h < gridLayout.size() - 1; h++) {
+				if (!chainBlock.isEmpty() && chainBlock.contains(gridLayout.get(h).get(currentX).getComboOrigin())) {
+					tempChainCount = chainCount;
+				}
+				if (!comboBlocks.contains(gridLayout.get(h).get(currentX)) && !gridLayout.get(h).get(currentX).isEmptyBlock()) {
+					System.out.println("Grid.declareChain(): Assigning combo");
+					gridLayout.get(h).get(currentX).setComboOrigin(b);
+				}
+			}
+			tempChainBlock.add(b);
+		}
+		chainCount = tempChainCount;
+		chainBlock = tempChainBlock;
+	}
+	
+	private int checkForSpecial(Vector<Block> comboBlocks) {
 		int numberOfSpecials = 0;
 		for (Block b : comboBlocks) {
 			if (b.colour.equals("greySteel")) {
 				if (numberOfSpecials++ == 0) {
-					animateAttack(b.associatedGraphic);
+					animateAttack(b.associatedGraphic);			// Left most block, but not top-most.
 				}
 			}
 		}
+		return numberOfSpecials;
 	}
 	
 	private void animateFlicker(Vector<Block> comboBlocks) {
@@ -902,7 +955,7 @@ public class Grid {
 					int currentX = b.grid_x;
 					int belowY = b.grid_y - 1;
 					if (belowY >= 0) {
-						if (gridLayout.get(belowY).get(currentX).colour.equals("emptyBlock") || 
+						if (gridLayout.get(belowY).get(currentX).isEmptyBlock() || 
 							gridLayout.get(belowY).get(currentX).colour.equals("disappearingBlock")) {
 						} else {
 							b.setFalling(false);
@@ -916,15 +969,15 @@ public class Grid {
 	}
 	
 	// Should have two parameters: Width and Height of garbage block to create.
-	public void createGarbage() {
+	public void createGarbage(int w, int h, String garbageColour) {
 		
 		int g_gridX = 0;	 // Or a random number between 0 and (grid_width - garbage_width).
 		int g_gridY = gridLayout.size() - 1;
 		int g_graphicX = gridPanel.getRelativeX() + (BLOCK_WIDTH * g_gridX);
 		int g_graphicY = gridPanel.getRelativeY() + gridPanel.getRelativeHeight() -
 						(BLOCK_WIDTH * g_gridY);
-		int g_width = 6;	// Or number based on combo
-		int g_height = 3;	// Or number based on chain
+		int g_width = w;	// Or number based on combo
+		int g_height = h;	// Or number based on chain
 		
 		int[] garbageInfo = { 	g_gridX,
 								g_gridY,
@@ -932,7 +985,6 @@ public class Grid {
 								g_graphicY,
 								g_width,
 								g_height };	
-		String garbageColour = "garbageBlue";
 		
 		/*
 		if (gridLayout.size() > 14) {
@@ -987,7 +1039,7 @@ public class Grid {
 			// For each row above the screen, let's see if it's an empty row.
 			boolean rowIsEmpty = true;
 			for (Block b : gridLayout.get(row)) {
-				if (!b.colour.equals("emptyBlock")) {
+				if (!b.isEmptyBlock()) {
 					rowIsEmpty = false;
 					break;
 				}
@@ -1022,7 +1074,9 @@ public class Grid {
 				GRID_STATUS.add("STOP");
 				graceTimer = GRACE_TIME;
 			} else {
-				graceTimer--;
+				if (!hasGridStatus("FREEZE") && !hasGridStatus("GARBAGE_CLEAR")) {
+					graceTimer--;
+				}
 			}
 		} else {
 			if (hasGridStatus("STOP")) {
@@ -1034,7 +1088,7 @@ public class Grid {
 			// Grace timer reached 0, therefore you lost.
 			for (Vector<Block> row : gridLayout) {
 				for (Block b : row) {
-					if (!b.isGarbage() && !b.colour.equals("emptyBlock")) {
+					if (!b.isGarbage() && !b.isEmptyBlock()) {
 						b.associatedGraphic.setImage(3);
 					}
 				}
@@ -1045,7 +1099,7 @@ public class Grid {
 		/*
 		if (filledHeight >= WARNING_HEIGHT) {
 			for (Block b : gridLayout.get(WARNING_HEIGHT)) {
-				if (!b.isGarbage() && !b.colour.equals("emptyBlock")) {
+				if (!b.isGarbage() && !b.isEmptyBlock()) {
 					for (int i = Math.min(filledHeight - 1, GRID_HEIGHT - 1); i >= 0; i--) {
 						Block getBlock = gridLayout.get(i).get(b.grid_x);
 						if (!getBlock.associatedGraphic.animation.isPlaying()) {
@@ -1065,5 +1119,91 @@ public class Grid {
 			}
 		} */
 		return false;
+	}
+	
+	public void receiveGarbage(int count) {
+		// Start the grace period between receiving garbage from an attack and it actually dropping.
+		garbageTimer = STOP_TIME;
+		int slotIndex = 0;
+		
+		for (int i = 0; i < 4; i++) {
+			if (garbageSlot[i] < 6) {
+				count = count + garbageSlot[i];
+				garbageSlot[i] = 0;
+			} else {
+				slotIndex = i + 1;
+			}
+		}
+		
+		if (slotIndex > 3) {
+			System.out.println("Grid.receiveGarbage(): Warning - last slot has a block of length 6 or greater, when it shouldn't.");
+			System.out.println(" ----- May lead to infinite loop.");
+		}
+		
+		while (count > 0) {	
+			if (count > 99) { 
+				garbageSlot[getNextSlotIndex()] = 100;
+				count -= 100;
+			} else {
+				for (int i = Math.min(6, count); i >= 3; i--) {
+					if (count % i > 3 || count % i == 0) {
+						if (i == 6) { garbageSlot[0] += i; }
+						else { garbageSlot[getNextSlotIndex()] += i; }
+						count -= i;
+					}
+				}
+			}
+		}
+	}
+	
+	private int getNextSlotIndex() {
+		if (++garbageSlotIndex > 4) {
+			garbageSlotIndex = 0;
+		}
+		
+		for (int i = garbageSlotIndex; i < 4; i++) {
+			if (garbageSlot[i] == 0) {
+				garbageSlotIndex = i;
+				break;
+			}
+		}
+		
+		return garbageSlotIndex;
+	}
+	
+	// Controls a counter that sees if we can drop garbage on this grid yet.
+	public void garbageDropCheck() {
+		if (hasGridStatus("STOP") || hasGridStatus("FREEZE") || hasGridStatus("GARBAGE_CLEAR")) {
+			return;
+		}
+		
+		if (garbageTimer-- < 0) {
+			dropGarbage();
+		}
+	}
+	
+	private void dropGarbage() {
+		for (int i = 0; i < garbageSlot.length; i++) {
+			if (garbageSlot[i] <= 0) {
+				//return;
+			} else {
+				if (garbageSlot[i] >= 100) {
+					createGarbage(GRID_WIDTH, 1, "specialGrey");
+				} else if (garbageSlot[i] >= GRID_WIDTH) {
+					createGarbage(GRID_WIDTH, Math.max(1, garbageSlot[i] / GRID_WIDTH), "garbageBlue");
+				} else {
+					createGarbage(garbageSlot[i], 1, "garbageBlue");
+				}
+				garbageSlot[i] = 0;
+			}
+		}
+	}
+	
+	public void printGarbageSlots() {
+		String output = "";
+		for (int i = 0; i < garbageSlot.length; i++) {
+			output += (garbageSlot[i] + " ");
+		}
+		System.out.println("Grid.printGarbageSlots(): " + output);
 	}
 }
