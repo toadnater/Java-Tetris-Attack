@@ -20,7 +20,8 @@ public class Grid {
 	
 	// Semaphor used to see if there is a garbageBlock already being animated before we start animating another one.
 	public static GarbageBlock GarbageSemaphor = null;
-
+	public GarbageHandler gHandle = new GarbageHandler();
+	
 	private Vector<String> GRID_STATUS;
 	private layoutGenerator rowGenerator;
 	private TAGraphic gridPanel;
@@ -34,9 +35,7 @@ public class Grid {
 	private int linesGenerated = 0;
 	private Vector<Block> chainBlock;
 	private int chainCount;
-	private int garbageTimer;
-	private int[] garbageSlot = {0, 0, 0, 0};
-	private int garbageSlotIndex = 0;
+	
 	//private int stopTimer;		// Currently not implemented.
 	
 	public Grid(TAGraphic myPanel, TAGraphic yourPanel, Game.Cursor c, int[] constants, String startingLayout) {
@@ -351,7 +350,7 @@ public class Grid {
 		
 	}
 	
-	public int checkCombos() {
+	public void checkCombos() {
 		// This will use code similar to our applyGravity() method.
 		// Instead of checking for empty blocks above though, we're
 		// going to check for blocks of the same kind above and if there
@@ -450,16 +449,17 @@ public class Grid {
 		if (!allComboBlocks.isEmpty()) {			
 			if (comboCount > 3) { 
 				animateCombo(allComboBlocks, Integer.toString(comboCount)); 
-				sendGarbageCount += comboCount - 1;
+				gHandle.sendGarbage(comboCount - 1, "garbageBlue");
+				System.out.println("Grid.checkCombos(): Sending garbage: " + (comboCount - 1));
 			}
-			if (checkForSpecial(allComboBlocks) >= 3) {
-				sendGarbageCount += 100;
-				// -- Remainder of extra garbage blocks
+			int specialCount = checkForSpecial(allComboBlocks);
+			if (specialCount >= 3) {
+				gHandle.sendGarbage(specialCount, 1, "greySteel");
+				System.out.println("Grid.checkCombos(): Sending special garbage!");
 			}
 			if (comboCount > 2) {
 				checkChain(allComboBlocks);
 				declareChain(allComboBlocks);
-				//sendGarbageCount += 6;		// I believe it caps at 6.
 			}
 
 			GRID_STATUS.add("FREEZE");
@@ -468,11 +468,7 @@ public class Grid {
 			animateFlicker(allComboBlocks);								
 			// animate them here so that they become "PLAYING" and are not calculated
 			// in upcoming checks.
-		
-			System.out.println("Grid.checkCombos(): Sending garbage: " + sendGarbageCount);
 		}
-		
-		return sendGarbageCount;
 	}
 	
 	// Overload for checking garbage blocks using the parent
@@ -1121,89 +1117,20 @@ public class Grid {
 		return false;
 	}
 	
-	public void receiveGarbage(int count) {
-		// Start the grace period between receiving garbage from an attack and it actually dropping.
-		garbageTimer = STOP_TIME;
-		int slotIndex = 0;
-		
-		for (int i = 0; i < 4; i++) {
-			if (garbageSlot[i] < 6) {
-				count = count + garbageSlot[i];
-				garbageSlot[i] = 0;
-			} else {
-				slotIndex = i + 1;
-			}
-		}
-		
-		if (slotIndex > 3) {
-			System.out.println("Grid.receiveGarbage(): Warning - last slot has a block of length 6 or greater, when it shouldn't.");
-			System.out.println(" ----- May lead to infinite loop.");
-		}
-		
-		while (count > 0) {	
-			if (count > 99) { 
-				garbageSlot[getNextSlotIndex()] = 100;
-				count -= 100;
-			} else {
-				for (int i = Math.min(6, count); i >= 3; i--) {
-					if (count % i > 3 || count % i == 0) {
-						if (i == 6) { garbageSlot[0] += i; }
-						else { garbageSlot[getNextSlotIndex()] += i; }
-						count -= i;
-					}
-				}
-			}
-		}
-	}
-	
-	private int getNextSlotIndex() {
-		if (++garbageSlotIndex > 4) {
-			garbageSlotIndex = 0;
-		}
-		
-		for (int i = garbageSlotIndex; i < 4; i++) {
-			if (garbageSlot[i] == 0) {
-				garbageSlotIndex = i;
-				break;
-			}
-		}
-		
-		return garbageSlotIndex;
-	}
-	
-	// Controls a counter that sees if we can drop garbage on this grid yet.
 	public void garbageDropCheck() {
 		if (hasGridStatus("STOP") || hasGridStatus("FREEZE") || hasGridStatus("GARBAGE_CLEAR")) {
 			return;
-		}
-		
-		if (garbageTimer-- < 0) {
+		} else if (gHandle.canDropGarbage()) {
 			dropGarbage();
 		}
 	}
-	
-	private void dropGarbage() {
-		for (int i = 0; i < garbageSlot.length; i++) {
-			if (garbageSlot[i] <= 0) {
-				//return;
-			} else {
-				if (garbageSlot[i] >= 100) {
-					createGarbage(GRID_WIDTH, 1, "specialGrey");
-				} else if (garbageSlot[i] >= GRID_WIDTH) {
-					createGarbage(GRID_WIDTH, Math.max(1, garbageSlot[i] / GRID_WIDTH), "garbageBlue");
-				} else {
-					createGarbage(garbageSlot[i], 1, "garbageBlue");
-				}
-				garbageSlot[i] = 0;
+
+	public void dropGarbage() {
+		for (int i = 0; i < 4; i++) {
+			if (gHandle.garbageDropCheck(i)) {
+				createGarbage(gHandle.getGarbageWidth(i), gHandle.getGarbageHeight(i), gHandle.getGarbageType(i));
+				gHandle.emptyGarbageColumn(i);
 			}
 		}
-	}
-	
-	public void printGarbageSlots() {
-		String output = "";
-		for (int i = 0; i < garbageSlot.length; i++) {
-			output += (garbageSlot[i] + " ");
-		}
-		System.out.println("Grid.printGarbageSlots(): " + output);
-	}
+	}	
 }
