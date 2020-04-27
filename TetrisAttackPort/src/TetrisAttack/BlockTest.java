@@ -33,78 +33,12 @@ public class BlockTest {
 	public void tearDown() throws Exception {
 	}
 
-	@Test
-	public void testSetGraphicLocation() {
-		gameTest = new Game();
-		testBlock = new Block('1', gameTest);
-		int originalX = testBlock.getGraphicX();	
-		int originalY = testBlock.getGraphicY();
-		
-		testBlock.setGraphicLocation(originalX + 1, originalY + 1);
-		
-		assertTrue(originalX != testBlock.getGraphicX());
-		assertTrue(originalY != testBlock.getGraphicY());
-	}
-	
-	@Test
-	public void testSetGraphicLocationFuture() {
-		//Don't know how to test now...
-		assertTrue(false);
-	}
-	
-	@Test
-	public void testGetGraphicX() {
-		
-		try {
-		gameTest = new Game();
-		testBlock = new Block('1', gameTest);
-		int newTestLocation = 10;
-		testBlock.setGraphicLocation(newTestLocation, 0 );
-		assertTrue(testBlock.getGraphicX() == newTestLocation);
-		}
-		 catch (AssertionError error) {
-	            // Output expected AssertionErrors.
-			 System.out.println(error);
-	        } catch (Exception exception) {
-	            // Output unexpected Exceptions.
-	        	 System.out.println(exception);
-	        }
-	}
-	
-	@Test
-	public void testGetGraphicY() {
-		gameTest = new Game();
-		testBlock = new Block('1', gameTest);
-		int newTestLocation = 10;
-		testBlock.setGraphicLocation(0, newTestLocation);
-		
-		assertTrue(testBlock.getGraphicY() == newTestLocation);
-	}
-	
-	@Test
-	public void testGetGraphicLocation() {
-		gameTest = new Game();
-		testBlock = new Block('1', gameTest);
-		int originalX = testBlock.getGraphicX();	
-		int originalY = testBlock.getGraphicY();
-		
-		testBlock.setGraphicLocation(originalX + 1, originalY + 1);
-		
-		assertTrue(originalX != testBlock.getGraphicX());
-		assertTrue(originalY != testBlock.getGraphicY());
-	}
 	
 	@Test
 	public void testDeactivateBlock() {
 		testBlock.setActive(true);
 		testBlock.deactivateBlock();
 		assertFalse(testBlock.isActive());
-	}
-	
-	@Test
-	public void testActivateBlock() {
-		//Don't know how to test now...
-		assertTrue(false);
 	}
 	
 	@Test
@@ -132,14 +66,6 @@ public class BlockTest {
 	}
 	
 	@Test
-	public void testSetFallRequest() {
-		testBlock.setFallRequest(false);
-		assertFalse(testBlock.isFallRequested());
-		testBlock.setFallRequest(true);
-		assertTrue(testBlock.isFalling());
-	}
-	
-	@Test
 	public void testSetColour() {
 		testBlock = new Block('1'); // should be "redHeart"
 		assertTrue(testBlock.colour.equals("redHeart"));
@@ -152,7 +78,7 @@ public class BlockTest {
 		//Don't know how to test now...
 		assertTrue(false);
 	}
-
+	
 	@Test
 	public void testSetComboOrigin() {
 		//Don't know how to test now...
@@ -177,7 +103,11 @@ public class BlockTest {
 		for(Map.Entry<Character,String> entry : colorsToMatch.entrySet()) {
 			testBlock = new Block(entry.getKey(), gameTest);
 			assertTrue(testBlock.colour.equals(entry.getValue()));
-		}	
+		}
+			
 	}
 
+	
+	//helper Methods
+	
 }
