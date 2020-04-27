@@ -1,0 +1,22 @@
+INDEX VERSION 1.131+D:\Source\GitHubRepos\Java-Tetris-Attack\.metadata\.plugins\org.eclipse.jdt.core
+2538946849.index
+3993276655.index
+2609714019.index
+3720716507.index
+1352546577.index
+1741647643.index
+4226333998.index
+2973695523.index
+615226062.index
+4159017284.index
+1148937498.index
+3839578677.index
+686889833.index
+752476569.index
+1542774334.index
+858989570.index
+711050520.index
+3450831843.index
+561689436.index
+3166927587.index
+2200875372.index
