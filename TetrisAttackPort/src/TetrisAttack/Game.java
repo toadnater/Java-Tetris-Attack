@@ -47,6 +47,14 @@ class Game extends Screen {
 	private			int		PLAYER_INDEX = 0;
 	private 		int		AI_INDEX = 1;
 	
+	
+	private int[] gridConstants = { BLOCK_VARIETY, 
+			BLOCK_WIDTH,
+			GRID_WIDTH,
+			GRID_HEIGHT,
+			STARTING_BLOCK_COUNT,
+			WARNING_HEIGHT
+			};
 	private 		boolean	checkForGameOver;
 	
 	private 		int		sendGarbageBlocks;
@@ -115,13 +123,7 @@ class Game extends Screen {
 		AI = new ToddsAI();
 		checkForGameOver = false;
 		
-		int[] gridConstants = { BLOCK_VARIETY, 
-								BLOCK_WIDTH,
-								GRID_WIDTH,
-								GRID_HEIGHT,
-								STARTING_BLOCK_COUNT,
-								WARNING_HEIGHT
-								};
+		
 		
 		layoutGenerator gridGenerator = new layoutGenerator(gridConstants);
 		String startingLayout = gridGenerator.randomStartLayout();
@@ -314,4 +316,6 @@ class Game extends Screen {
     		default:	// Unhandled case 
     	}
     }   
+    
+    public int[] getGridConstants() { return gridConstants;}
 }
