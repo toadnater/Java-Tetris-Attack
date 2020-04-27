@@ -58,6 +58,24 @@ public class Block {
 		//   - Add our graphic to the image list
 		Game.screenHandle.addGraphic(associatedGraphic);
 	}
+	//Added to possibly test testSetGraphicLocation()
+	public Block(char c, Game testGame, TAGraphic testGraphic) {
+		this();
+		
+		// We need to decide what type of block we are going to create!
+		// ------------------------------------------------------------
+		colour = convertCharToColour(c);
+		
+		// Regular block:
+		//   Create our block graphic
+		//   - Even none existent (empty) blocks are created so that when
+		//     we need to animated blocks switching with empty spaces,
+		//     a graphic object at least exists to use for reference.
+		associatedGraphic = new TAGraphic(colour);
+		
+		//   - Add our graphic to the image list
+		Game.screenHandle.addGraphic(associatedGraphic);
+	}
 	
 	public void setGridLocation(int x, int y) {
 		// Store our block's location and have the graphic reflect it.

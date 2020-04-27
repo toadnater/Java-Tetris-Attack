@@ -1,4 +1,5 @@
 package TetrisAttack;
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,11 @@ public class BlockTest {
 	Block testBlock;	
 	TAGraphic testTAGraphic;
 	Game gameTest;
+	private int testGridLocationX = 1;
+	private int testGridLocationY = 1;
+	private int testGraphicLocationX = 2;
+	private int testGraphicLocationY = 2;
+	private Block newBlock;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {	
 
@@ -35,12 +41,45 @@ public class BlockTest {
 
 
 	@Test
+	public void testSetGridLocation() {
+		testBlock.setGridLocation(testGridLocationX, testGridLocationY );
+		assertEquals(testBlock.grid_x, testGridLocationX);
+		assertEquals(testBlock.grid_y, testGridLocationY);
+	}
+
+	@Test
+	public void testSetGraphicLocation() {
+		//testBlock = new Block(entry.getKey(), gameTest);
+		//testBlock.setGraphicLocation(testGraphicLocationX, testGraphicLocationY );
+		//Point tempPoint = testBlock.associatedGraphic.getLocation();
+		//tempPoint = null;
+		//assertEquals(testBlock.associatedGraphic.getLocation(), testGraphicLocationX);
+		//assertEquals(testBlock.getGraphicY(), testGraphicLocationY);
+		assertTrue(false);
+	}
+	
+	@Test
+	public void testGetAndSetGraphicLocationFuture() {
+		testBlock.setGraphicLocationFuture(testGraphicLocationX, testGraphicLocationY );
+		assertEquals(testBlock.getGraphicX(), testGraphicLocationX);
+		assertEquals(testBlock.getGraphicY(), testGraphicLocationY);
+	}
+	
+	@Test
 	public void testDeactivateBlock() {
 		testBlock.setActive(true);
 		testBlock.deactivateBlock();
 		assertFalse(testBlock.isActive());
 	}
 
+	@Test
+	public void testActivateBlock() {
+		//testBlock.setActive(false);
+		//testBlock.activateBlock();
+		//assertTrue(testBlock.isActive());
+		assertTrue(false);
+	}
+	
 	@Test
 	public void testSetGarbage() {
 		testBlock.setGarbage(false);
@@ -64,6 +103,14 @@ public class BlockTest {
 		testBlock.setFalling(true);
 		assertTrue(testBlock.isFalling());
 	}
+	
+	@Test
+	public void testSetFallRequest() {
+		testBlock.setFallRequest(false);
+		assertFalse(testBlock.isFallRequested());
+		testBlock.setFallRequest(true);
+		assertTrue(testBlock.isFallRequested());
+	}
 
 	@Test
 	public void testSetColour() {
@@ -80,9 +127,11 @@ public class BlockTest {
 	}
 
 	@Test
-	public void testSetComboOrigin() {
+	public void testSetAndGetComboOrigin() {
 		//Don't know how to test now...
-		assertTrue(false);
+		testBlock.setComboOrigin(testBlock);
+		newBlock = testBlock.getComboOrigin();
+		assertEquals(newBlock, testBlock);
 	}
 
 	@Test
