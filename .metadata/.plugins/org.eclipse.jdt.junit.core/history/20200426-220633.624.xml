@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><testrun name="ScreenObjectTest" project="TetrisAttackPort" tests="12" started="12" failures="0" errors="0" ignored="0">
+  <testsuite name="TetrisAttack.ScreenObjectTest" time="0.001">
+    <testcase name="testSetVisible" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testGetOriginXY" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetX" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetY" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetAnimated" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetCursor" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetBackground" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetLooped" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetMenu" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetName" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetText" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+    <testcase name="testSetTiles" classname="TetrisAttack.ScreenObjectTest" time="0.0"/>
+  </testsuite>
+</testrun>

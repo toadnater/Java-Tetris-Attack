@@ -1,0 +1,14 @@
+package TetrisAttack;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class BlockTest {
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
+
+}
