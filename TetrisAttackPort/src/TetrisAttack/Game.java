@@ -302,7 +302,7 @@ class Game extends Screen {
     	changeTimerSpeed(2);
     }
 
-    public void parseAiInstruction(AIController.AIInstruction instruction) {
+    public void parseAiInstruction(AIInstruction instruction) {
     	switch(instruction) {
     		case MOVE_LEFT: actionLeft(AI_INDEX);
     		case MOVE_RIGHT: actionRight(AI_INDEX);
