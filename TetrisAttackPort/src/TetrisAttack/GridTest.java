@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import TetrisAttack.Game.Cursor;
+//import TetrisAttack.Game.Cursor;
 
 public class GridTest {
 
@@ -19,6 +19,7 @@ public class GridTest {
 	private Cursor testCursor;
 	private int[] testConstants;
 	private String testStartingLayout;
+	
 		
 	
 	@BeforeClass
@@ -33,7 +34,8 @@ public class GridTest {
 	public void setUp() throws Exception {
 		testGame = new Game();
 		testConstants = testGame.getGridConstants();
-		testGrid = new Grid(testMyPanel,testYourPanel, testCursor, testConstants, testStartingLayout);
+	
+		//testGrid = new Grid(testMyPanel,testYourPanel, testCursor, testConstants, testStartingLayout);
 	}
 
 	@After
@@ -41,8 +43,8 @@ public class GridTest {
 	}
 
 	@Test
-	public void test() {
+	public void testCursorHasLeft() {
+		
 		assertTrue(true);
 	}
-
 }

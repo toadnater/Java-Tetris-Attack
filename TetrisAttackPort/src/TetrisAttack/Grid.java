@@ -26,7 +26,8 @@ public class Grid {
 	private layoutGenerator rowGenerator;
 	private TAGraphic gridPanel;
 	private TAGraphic enemyPanel;
-	private Game.Cursor associatedCursor;
+	//private Game.Cursor associatedCursor;
+	private Cursor associatedCursor;
 	private Vector<Block> newRow;
 	private Vector<Vector<Block>> gridLayout;
 	private String defaultLayout;
@@ -38,7 +39,8 @@ public class Grid {
 	
 	//private int stopTimer;		// Currently not implemented.
 	
-	public Grid(TAGraphic myPanel, TAGraphic yourPanel, Game.Cursor c, int[] constants, String startingLayout) {
+	//public Grid(TAGraphic myPanel, TAGraphic yourPanel, Game.Cursor c, int[] constants, String startingLayout) {
+		public Grid(TAGraphic myPanel, TAGraphic yourPanel, Cursor c, int[] constants, String startingLayout) {
 		super();
 				
 		// Parse our grid constants

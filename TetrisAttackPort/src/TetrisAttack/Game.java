@@ -20,17 +20,17 @@ class Game extends Screen {
 	//    that from being successful.
 	public static Game screenHandle;
 	
-	protected class Cursor {
-		
-		TAGraphic image;
-		public double offset = 16;
-		public int posX = 0;				// Cursor parameters that mean more to us
-		public int posY = 0;				// than their (X,Y) coordinates in pixels.		
-	
-		public Cursor() {
-			image = new TAGraphic("game_cursor");
-		}	
-	}
+	//protected class Cursor {
+	//	
+	//	TAGraphic image;
+	//	public double offset = 16;
+	//	public int posX = 0;				// Cursor parameters that mean more to us
+	//	public int posY = 0;				// than their (X,Y) coordinates in pixels.		
+	//
+	//	public Cursor() {
+	//		image = new TAGraphic("game_cursor");
+	//	}	
+	//}
 	
 	public Grid grid[];
 	public Cursor gridCursor[];
@@ -155,20 +155,31 @@ class Game extends Screen {
 		STATUS = "RUNNING";
 	}
 	
+	//public void cursorOffset(Cursor c, int x, int y) {
+	//	c.posX += x;
+	//	c.posY += y;
+	//}
+	//public void cursorPosition(Cursor c, int x, int y) {
+	//	c.posX = x;
+	//	c.posY = y;
+	//}
+	
 	public void cursorOffset(Cursor c, int x, int y) {
-		c.posX += x;
-		c.posY += y;
+		c.setPosX(x + c.getPosX()); 
+		c.setPosY(y + c.getPosY()); 
 	}
 	
 	public void cursorPosition(Cursor c, int x, int y) {
-		c.posX = x;
-		c.posY = y;
+		c.setPosX(x);
+		c.setPosY(y);
 	}
+    
 	
-	public boolean cursorHasLeft(Cursor c) { return (c.posX - 1 >= 0);	}
-	public boolean cursorHasRight(Cursor c) { return (c.posX + 1 < GRID_WIDTH - 1); }	// Because the cursor is 2 lengths wide
-	public boolean cursorHasDown(Cursor c) { return (c.posY - 1 >= 0); }
-	public boolean cursorHasUp(Cursor c) { return (c.posY + 1 < GRID_HEIGHT); }
+	
+	public boolean cursorHasLeft(Cursor c) { return (c.getPosX() - 1 >= 0);	}
+	public boolean cursorHasRight(Cursor c) { return (c.getPosX() + 1 < GRID_WIDTH - 1); }	// Because the cursor is 2 lengths wide
+	public boolean cursorHasDown(Cursor c) { return (c.getPosY() - 1 >= 0); }
+	public boolean cursorHasUp(Cursor c) { return (c.getPosY() + 1 < GRID_HEIGHT); }
 	
 	// ===================================================
 	
@@ -225,7 +236,7 @@ class Game extends Screen {
     public void actionDown(int index) {
     	if (STATUS.equals("RUNNING")) {
 			if (cursorHasDown(gridCursor[index])) {
-				gridCursor[index].image.offset(0, (int)(gridCursor[index].offset * Main.globalScale));
+				gridCursor[index].image.offset(0, (int)(gridCursor[index].getOffset() * Main.globalScale));
 				cursorOffset(gridCursor[index], 0, -1);
 			}
     	}
@@ -235,7 +246,7 @@ class Game extends Screen {
     public void actionUp(int index) {
     	if (STATUS.equals("RUNNING")) {
 	    	if (cursorHasUp(gridCursor[index])) {
-	    		gridCursor[index].image.offset(0, (int)(-gridCursor[index].offset * Main.globalScale));
+	    		gridCursor[index].image.offset(0, (int)(-gridCursor[index].getOffset() * Main.globalScale));
 	    		cursorOffset(gridCursor[index], 0, 1);
 	    	}
     	}
@@ -245,7 +256,7 @@ class Game extends Screen {
     public void actionLeft(int index) {
     	if (STATUS.equals("RUNNING")) {
 	    	if (cursorHasLeft(gridCursor[index])) {
-	    		gridCursor[index].image.offset((int)(-gridCursor[index].offset * Main.globalScale), 0);
+	    		gridCursor[index].image.offset((int)(-gridCursor[index].getOffset() * Main.globalScale), 0);
 	    		cursorOffset(gridCursor[index], -1, 0);
 	    	}
     	}
@@ -255,7 +266,7 @@ class Game extends Screen {
     public void actionRight(int index) {
     	if (STATUS.equals("RUNNING")) {
 	    	if (cursorHasRight(gridCursor[PLAYER_INDEX])) {
-	    		gridCursor[index].image.offset((int)(gridCursor[index].offset * Main.globalScale), 0);
+	    		gridCursor[index].image.offset((int)(gridCursor[index].getOffset() * Main.globalScale), 0);
 	    		cursorOffset(gridCursor[index], 1, 0);
 	    	}
     	}
@@ -270,9 +281,9 @@ class Game extends Screen {
     public void actionX() { actionX(PLAYER_INDEX); }
     public void actionX(int index) {						// Ok button
     	if (STATUS.equals("RUNNING")) {
-    		System.out.println("Left: " + grid[index].getBlockColour(gridCursor[index].posX, gridCursor[index].posY));
-    		System.out.println("Right: " + grid[index].getBlockColour(gridCursor[index].posX + 1, gridCursor[index].posY));
-    		grid[index].swapBlocks(gridCursor[index].posX, gridCursor[index].posY);
+    		System.out.println("Left: " + grid[index].getBlockColour(gridCursor[index].getPosX(), gridCursor[index].getPosY()));
+    		System.out.println("Right: " + grid[index].getBlockColour(gridCursor[index].getPosX() + 1, gridCursor[index].getPosY()));
+    		grid[index].swapBlocks(gridCursor[index].getPosX(), gridCursor[index].getPosY());
     	}
     }	
     public void actionS() { actionS(PLAYER_INDEX); }
