@@ -11,7 +11,7 @@ import java.util.Vector;
 public abstract class AIController {
 	
 	
-	public enum AIInstruction {	MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, IDLE, PUSH, SWAP }
+	//public enum AIInstruction {	MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN, IDLE, PUSH, SWAP }
 	private Vector<AIInstruction> instructions;
 	private Vector<Vector<Block>> homeGrid;		// Our grid
 	private Vector<Vector<Block>> awayGrid;		// Opponent's grid
@@ -22,7 +22,7 @@ public abstract class AIController {
 	 * 
 	 */
 	public AIController() {
-		instructions = new Vector<AIInstruction>();
+		setInstructions(new Vector<AIInstruction>());
 	}
 	
 	/**
@@ -215,23 +215,23 @@ public abstract class AIController {
 		if (changeInX < 0) {
 			// Move right
 			for (int i = 0; i < Math.abs(changeInX); i++) {
-				instructions.add(AIInstruction.MOVE_RIGHT);
+				getInstructions().add(AIInstruction.MOVE_RIGHT);
 			}
 		} else if (changeInX > 0) {
 			// Move left
 			for (int i = 0; i < Math.abs(changeInX); i++) {
-				instructions.add(AIInstruction.MOVE_LEFT);
+				getInstructions().add(AIInstruction.MOVE_LEFT);
 			}
 		}
 		if (changeInY < 0) {
 			// Move up
 			for (int i = 0; i < Math.abs(changeInY); i++) {
-				instructions.add(AIInstruction.MOVE_UP);	
+				getInstructions().add(AIInstruction.MOVE_UP);	
 			}
 		} else if (changeInY > 0) {
 			// Move down
 			for (int i = 0; i > Math.abs(changeInY); i++) {
-				instructions.add(AIInstruction.MOVE_DOWN);
+				getInstructions().add(AIInstruction.MOVE_DOWN);
 			}
 		}
 	}
@@ -242,8 +242,8 @@ public abstract class AIController {
 	 * @return		The next instruction to go on the stack.
 	 */
 	public final AIInstruction getNextInstruction() {
-		if (instructions.size() > 0) {
-			return instructions.remove(0);
+		if (getInstructions().size() > 0) {
+			return getInstructions().remove(0);
 		}
 		return AIInstruction.IDLE;
 	}
@@ -255,8 +255,8 @@ public abstract class AIController {
 	 * have not yet been executed.
 	 */
 	public final void resetAllInstructions() {
-		if (instructions.size() > 0) {
-			instructions.removeAllElements();
+		if (getInstructions().size() > 0) {
+			getInstructions().removeAllElements();
 		}
 	}
 	
@@ -270,6 +270,16 @@ public abstract class AIController {
 	 * @return		The position on the stack where the instruction is.
 	 */
 	public final boolean addInstruction(AIInstruction i) {
-		return instructions.add(i);
+		return getInstructions().add(i);
 	}
+
+	public Vector<AIInstruction> getInstructions() {
+		return instructions;
+	}
+
+	public void setInstructions(Vector<AIInstruction> instructions) {
+		this.instructions = instructions;
+	}
+	
+	
 }
