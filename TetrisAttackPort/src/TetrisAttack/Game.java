@@ -133,13 +133,7 @@ class Game extends Screen {
 		grid[0].createGrid();
 		grid[0].layoutGrid();
 		grid[1].createGrid();
-		grid[1].layoutGrid();		
-		
-		// At this point, we're going to associate the GarbageHandlers to each other so
-		// they know who to send garbage to :)
-		
-		grid[0].gHandle.sendTo(grid[1].gHandle);
-		grid[1].gHandle.sendTo(grid[0].gHandle);
+		grid[1].layoutGrid();
 		
 		setBackground(new TAGraphic("vs_bg_lakitu")); 
 		addImage(panel1);					// Done over here because of foreground -> background rules
@@ -148,7 +142,7 @@ class Game extends Screen {
 		
 		// After we have our preliminary images registered in our allGraphics
 		// list, we need to have allGraphics added to the screen.		
-		addImages(allGraphics);	
+		addImages(allGraphics);
 		
 		STATUS = "RUNNING";
 	}
@@ -195,7 +189,9 @@ class Game extends Screen {
     		for (int t = 0; t < NUMBER_OF_PLAYERS; t++) {
 	    		grid[t].checkFalling();
 	    		grid[t].applyGravity();
-	    		grid[t].checkCombos();
+	    		if ((sendGarbageBlocks = grid[t].checkCombos()) > 0) {
+	    			sendGarbage(t, sendGarbageBlocks);
+	    		}
 	    		grid[t].disappearBlocks();
 	    		grid[t].garbageDropCheck();
 	    		if (grid[t].checkGameOver() && checkForGameOver) {
@@ -213,7 +209,19 @@ class Game extends Screen {
     }
     
     public void specialReloadsOnResize() {
-    }   
+    }
+    
+    // =======================================
+    // Special game functions
+    // =======================================
+    public void sendGarbage(int playerFrom, int garbageCount) {
+    	for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
+    		if (i != playerFrom) {
+    			grid[i].receiveGarbage(garbageCount);
+    		}
+    	}
+    }
+    
     
     // ---------------------------------------
 	// KEYBOARD FUNCTIONS FOR THIS OBJECT
@@ -292,6 +300,10 @@ class Game extends Screen {
     	} else {
     		STATUS = "RUNNING";
     	}
+    	//grid[0].printGrid();
+    	//grid[1].printGrid();
+    	grid[0].printGarbageSlots();
+    	grid[1].printGarbageSlots();
     }
     
     public void actionPlus() {

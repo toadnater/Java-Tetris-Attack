@@ -62,6 +62,7 @@ class MainMenu extends Screen {
 	
 	public MainMenu(String menuLevel) {
 		super(items);
+		createdMenuLayers();
 		createMenuStructure();
 		loadAnimations();
 		currentMenu = ML_TOP;
@@ -75,20 +76,22 @@ class MainMenu extends Screen {
 		}
 	}
 	
-	public void createMenuStructure() {
-		
+	public void createdMenuLayers() {	
 		ML_TOP = new MenuLayer(null, "menu_top");
-			ML_1PGAME = new MenuLayer(ML_TOP, "1playergame");
-				ML_STAGECLEAR = new MenuLayer(ML_1PGAME, "stageclear");
-					ML_STAGECLEAR_PASSWORD = new MenuLayer(ML_STAGECLEAR, "stageclear_password");
-				ML_PUZZLE = new MenuLayer(ML_1PGAME, "puzzle");
-					ML_PUZZLE_PASSWORD = new MenuLayer(ML_PUZZLE, "puzzle_password");
-				ML_VERSUS = new MenuLayer(ML_1PGAME, "versus");
-					ML_VERSUS_PASSWORD = new MenuLayer(ML_VERSUS, "versus_password");
-			ML_2PGAME = new MenuLayer(ML_TOP, "2playergame");
-			ML_HOWTOPLAY = new MenuLayer(ML_TOP, "howtoplay");
-			ML_HOWTOIMPROVE = new MenuLayer(ML_TOP, "howtoimprove");
-			ML_OPTION = new MenuLayer(ML_TOP, "option");
+		ML_1PGAME = new MenuLayer(ML_TOP, "1playergame");
+			ML_STAGECLEAR = new MenuLayer(ML_1PGAME, "stageclear");
+				ML_STAGECLEAR_PASSWORD = new MenuLayer(ML_STAGECLEAR, "stageclear_password");
+			ML_PUZZLE = new MenuLayer(ML_1PGAME, "puzzle");
+				ML_PUZZLE_PASSWORD = new MenuLayer(ML_PUZZLE, "puzzle_password");
+			ML_VERSUS = new MenuLayer(ML_1PGAME, "versus");
+				ML_VERSUS_PASSWORD = new MenuLayer(ML_VERSUS, "versus_password");
+		ML_2PGAME = new MenuLayer(ML_TOP, "2playergame");
+		ML_HOWTOPLAY = new MenuLayer(ML_TOP, "howtoplay");
+		ML_HOWTOIMPROVE = new MenuLayer(ML_TOP, "howtoimprove");
+		ML_OPTION = new MenuLayer(ML_TOP, "option");
+	}
+
+	public void createMenuStructure() {
 
 		ML_TOP.addChildMenu("1playergame", ML_1PGAME);
 			ML_1PGAME.addChildMenu("endless", null);
