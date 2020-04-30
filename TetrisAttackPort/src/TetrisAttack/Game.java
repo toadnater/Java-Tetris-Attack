@@ -36,12 +36,14 @@ class Game extends Screen {
 	public Cursor gridCursor[];
 	public AIController AI;
 	
-	private			int		BLOCK_VARIETY = 5;		// Different block colour count (based on difficulty)
-	private 		int 	BLOCK_WIDTH = 16;
-	private final 	int 	GRID_WIDTH = 6;			// Because 0 is actually the first line.
-	private final 	int 	GRID_HEIGHT = 12; 		// Note: 11 Lines active at any given time.
-	private final 	int 	STARTING_BLOCK_COUNT = 30;
-	private final	int 	WARNING_HEIGHT = 10;
+	public GridConstants gridConstants = new GridConstants();
+	
+	//private			int		BLOCK_VARIETY = 5;		// Different block colour count (based on difficulty)
+	//private 		int 	BLOCK_WIDTH = 16;
+	//private final 	int 	GRID_WIDTH = 6;			// Because 0 is actually the first line.
+	//private final 	int 	GRID_HEIGHT = 12; 		// Note: 11 Lines active at any given time.
+	//private final 	int 	STARTING_BLOCK_COUNT = 30;
+	//private final	int 	WARNING_HEIGHT = 10;
 	public 	static	String	STATUS;
 	private final	int		NUMBER_OF_PLAYERS = 2;
 	private			int		PLAYER_INDEX = 0;
@@ -115,21 +117,21 @@ class Game extends Screen {
 		AI = new ToddsAI();
 		checkForGameOver = false;
 		
-		int[] gridConstants = { BLOCK_VARIETY, 
-								BLOCK_WIDTH,
-								GRID_WIDTH,
-								GRID_HEIGHT,
-								STARTING_BLOCK_COUNT,
-								WARNING_HEIGHT
-								};
+		//int[] gridConstantsArray = { gridConstants.getBLOCK_VARIETY(),
+		//		gridConstants.getBLOCK_WIDTH(),
+		//		gridConstants.getGRID_WIDTH(),
+		//		gridConstants.getGRID_HEIGHT(),
+		//		gridConstants.getSTARTING_BLOCK_COUNT(),
+		//		gridConstants.getWARNING_HEIGHT()
+		//		};
 		
-		layoutGenerator gridGenerator = new layoutGenerator(gridConstants);
+		layoutGenerator gridGenerator = new layoutGenerator(gridConstants.getGridConstantsArray());
 		String startingLayout = gridGenerator.randomStartLayout();
 				
 		grid = new Grid[2];
 		
-		grid[0] = new Grid(panel1, panel2, gridCursor[0], gridConstants, startingLayout);
-		grid[1] = new Grid(panel2, panel1, gridCursor[1], gridConstants, startingLayout);
+		grid[0] = new Grid(panel1, panel2, gridCursor[0], gridConstants.getGridConstantsArray(), startingLayout);
+		grid[1] = new Grid(panel2, panel1, gridCursor[1], gridConstants.getGridConstantsArray(), startingLayout);
 		grid[0].createGrid();
 		grid[0].layoutGrid();
 		grid[1].createGrid();
@@ -164,9 +166,9 @@ class Game extends Screen {
 	}
 	
 	public boolean cursorHasLeft(Cursor c) { return (c.posX - 1 >= 0);	}
-	public boolean cursorHasRight(Cursor c) { return (c.posX + 1 < GRID_WIDTH - 1); }	// Because the cursor is 2 lengths wide
+	public boolean cursorHasRight(Cursor c) { return (c.posX + 1 < gridConstants.getGRID_WIDTH() - 1); }	// Because the cursor is 2 lengths wide
 	public boolean cursorHasDown(Cursor c) { return (c.posY - 1 >= 0); }
-	public boolean cursorHasUp(Cursor c) { return (c.posY + 1 < GRID_HEIGHT); }
+	public boolean cursorHasUp(Cursor c) { return (c.posY + 1 < gridConstants.getGRID_HEIGHT()); }
 	
 	// ===================================================
 	
